@@ -303,6 +303,12 @@ public class HashMap<K,V>
         // assert number >= 0 : "number must be non-negative";
         return number >= MAXIMUM_CAPACITY
                 ? MAXIMUM_CAPACITY
+        // Integer.highestOneBit((number - 1) << 1)  ;numerber-1 是为了防止 number=16时，求出的值为32，即13 或 14 或 15 是不用-1的，得到的结果都是16，
+                // 因为他们的二进制左移1位后，得到的依然是16.  二进制 1 1 1 1 1 对应十进制是16, 8，4，2，1 ;
+                //如果一个十进制数是在 16和8之间，那么对应的二进制是在10000 和 1000之间 ；
+                //如果一个十进制数是在 8和4之间，那么对应的二进制是在1000 和 100之间 ；
+                //那么我设置了一个自定义容量后，需要选择一个离自定义容量最近的2的二次幂作为实际容量值；
+                // 如何求这个2的2次幂值呢？只需要将自定义容量值的二进制，左移1位，取最高位，便可以得到离当前自定义容量值最近的2的2次幂值。为了防止临界值如8 16，发生翻倍，所以需要number-1
                 : (number > 1) ? Integer.highestOneBit((number - 1) << 1) : 1;
     }
 
